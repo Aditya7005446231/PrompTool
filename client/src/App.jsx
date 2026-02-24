@@ -8,12 +8,16 @@ import Tasks from './pages/Tasks';
 import Settings from './pages/Settings';
 import Board from './pages/Board';
 import Team from './pages/Team';
+import LogIn from './pages/LogIn';
+import SignUp from './pages/SignUp';
 
 function App() {
   return (
     <TaskProvider>
       <BrowserRouter>
         <Routes>
+          <Route path="/login" element={<LogIn />} />
+          <Route path="/signup" element={<SignUp />} />
           <Route path="/" element={<Layout />}>
           <Route index element={<Dashboard />} />
           <Route path="dashboard" element={<Dashboard />} />
