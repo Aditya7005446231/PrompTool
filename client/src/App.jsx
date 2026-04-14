@@ -12,8 +12,6 @@ import LogIn from './pages/LogIn';
 import SignUp from './pages/SignUp';
 import LandingPage from './pages/landing-page';
 import FocusMode from './pages/FocusMode';
-import Graph from './pages/Graph';
-
 function App() {
   return (
     <TaskProvider>
@@ -30,7 +28,6 @@ function App() {
             <Route path="tasks" element={<Tasks />} />
             <Route path="team" element={<Team />} />
             <Route path="focus" element={<FocusMode />} />
-            <Route path="graph" element={<Graph />} />
             <Route path="settings" element={<Settings />} />
           </Route>
         </Routes>

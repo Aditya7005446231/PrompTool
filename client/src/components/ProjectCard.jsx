@@ -4,7 +4,7 @@ import { MoreHorizontal } from 'lucide-react';
 // We receive the whole 'project' object as a prop
 const ProjectCard = ({ project }) => {
   return (
-    <div className="bg-white p-6 rounded-2xl border border-gray-100 hover:shadow-lg transition-all duration-200 hover:-translate-y-1 group">
+    <div className="bg-white p-8 rounded-3xl border border-gray-100 hover:shadow-2xl hover:shadow-cyan-100/20 hover:border-[#00B5E2]/30 transition-all duration-300 hover:-translate-y-1 group">
       
       {/* 1. Header: Icon & Menu */}
       <div className="flex justify-between items-start mb-4">

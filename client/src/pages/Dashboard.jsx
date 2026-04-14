@@ -7,8 +7,15 @@ import axios from 'axios';
 import { BarChart, Bar, XAxis, Tooltip, ResponsiveContainer, Cell } from 'recharts';
 
 const Dashboard = () => {
+ 
   const { tasks, fetchTasks, updateTask } = useTask();
   const [projects, setProjects] = useState([]);
+
+  const getInitial = (value) => {
+    if (typeof value !== 'string') return '?';
+    const trimmed = value.trim();
+    return trimmed ? trimmed.charAt(0).toUpperCase() : '?';
+  };
 
   useEffect(() => {
     fetchTasks();
@@ -30,9 +37,20 @@ const Dashboard = () => {
     fetchProjects();
   }, [fetchTasks]);
 
-  const inProgressCount = tasks.filter(t => t.status === 'In Progress').length;
-  const completedCount = tasks.filter(t => t.status === 'Done').length;
-  const highPriorityCount = tasks.filter(t => t.priority === 'High' || t.priority === 'Urgent').length;
+   const dummyData = [
+    {status: 'Todo', priority: 'Low'},
+    {status: 'Todo', priority:'High'},
+    {status: 'In Progress', priority:'Medium'},
+    {status: 'In Progress', priority:'High'},
+    {status: 'Done', priority:'Low'},
+    {status: 'Done', priority:'High'},
+  ];
+
+  const totalTask = dummyData.length;
+
+  const inProgressCount = dummyData.filter(t => t.status === 'In Progress').length;
+  const completedCount = dummyData.filter(t => t.status === 'Done').length;
+  const highPriorityCount = dummyData.filter(t => t.priority === 'High' || t.priority === 'Urgent').length;
 
   const activityData = [
     { name: 'Mon', completed: 4 },
@@ -48,8 +66,8 @@ const Dashboard = () => {
     <div className="space-y-6 pt-2">
       {/* 1. Stats Row */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
-        <StatCard icon={<ListTodo size={18} />} label="Total Tasks" value={tasks.length} color="blue" />
-        <StatCard icon={<Timer size={18} />} label="In Progress" value={inProgressCount} color="indigo" />
+        <StatCard icon={<ListTodo size={18} />} label="Total Tasks" value={totalTask} color="cyan" />
+        <StatCard icon={<Timer size={18} />} label="In Progress" value={inProgressCount} color="pink" />
         <StatCard icon={<CheckCircle2 size={18} />} label="Completed" value={completedCount} color="emerald" />
         <StatCard icon={<AlertCircle size={18} />} label="High Priority" value={highPriorityCount} color="rose" />
       </div>
@@ -61,22 +79,22 @@ const Dashboard = () => {
         <div className="col-span-1 lg:col-span-2 space-y-6">
           
           {/* Activity Chart */}
-          <div className="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm">
-            <div className="flex justify-between items-center mb-6">
-              <h2 className="text-lg font-bold text-gray-900">Weekly Activity</h2>
-              <span className="text-xs font-semibold text-blue-600 bg-blue-50 px-2 py-1 rounded">Last 7 Days</span>
+          <div className="bg-white rounded-3xl border border-gray-100 p-8 shadow-sm">
+            <div className="flex justify-between items-center mb-8">
+              <h2 className="text-xl font-black text-gray-900 tracking-tight">Weekly Activity</h2>
+              <span className="text-[10px] font-black text-[#00B5E2] bg-cyan-50 px-3 py-1 rounded-full uppercase tracking-widest">Analytics</span>
             </div>
-            <div className="h-48 w-full">
-              <ResponsiveContainer width="100%" height="100%">
+            <div className="h-56 w-full min-w-0">
+              <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={224}>
                 <BarChart data={activityData}>
-                  <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{fill: '#9CA3AF', fontSize: 10, fontWeight: 600}} dy={10} />
+                  <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{fill: '#9CA3AF', fontSize: 10, fontWeight: 700}} dy={10} />
                   <Tooltip 
                     cursor={{fill: '#F8FAFC'}}
-                    contentStyle={{borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)'}}
+                    contentStyle={{borderRadius: '20px', border: 'none', boxShadow: '0 20px 25px -5px rgb(0 0 0 / 0.1)'}}
                   />
-                  <Bar dataKey="completed" radius={[4, 4, 0, 0]} barSize={24}>
+                  <Bar dataKey="completed" radius={[6, 6, 0, 0]} barSize={28}>
                      {activityData.map((entry, index) => (
-                        <Cell key={`cell-${index}`} fill={index === 5 ? '#3B82F6' : '#E2E8F0'} />
+                        <Cell key={`cell-${index}`} fill={index === 5 ? '#E40046' : '#00B5E2'} fillOpacity={index === 5 ? 1 : 0.8} />
                      ))}
                   </Bar>
                 </BarChart>
@@ -85,33 +103,33 @@ const Dashboard = () => {
           </div>
 
           {/* Recent Tasks */}
-          <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
-            <div className="p-6 border-b border-gray-50 flex justify-between items-center">
-              <h2 className="text-lg font-bold text-gray-900">Ongoing Tasks</h2>
-              <Link to="/app/tasks" className="text-xs font-bold text-blue-600 hover:underline flex items-center gap-1">
-                View All <ArrowRight size={12} />
+          <div className="bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden">
+            <div className="p-6 border-b border-gray-50 flex justify-between items-center px-8">
+              <h2 className="text-lg font-black text-gray-900 tracking-tight">Recent Activity</h2>
+              <Link to="/app/tasks" className="text-xs font-black text-[#00B5E2] hover:text-[#E40046] flex items-center gap-1 transition-colors uppercase tracking-widest">
+                Full List <ArrowRight size={14} />
               </Link>
             </div>
             <div className="divide-y divide-gray-50">
               {tasks.filter(t => t.status !== 'Done').slice(0, 4).map(task => (
-                <div key={task._id} className="p-4 flex items-center justify-between hover:bg-gray-50/50 transition-colors group">
-                  <div className="flex items-center gap-3">
+                <div key={task._id} className="p-5 flex items-center justify-between hover:bg-gray-50/50 transition-colors group px-8">
+                  <div className="flex items-center gap-4">
                     <button 
                       onClick={() => updateTask(task._id, { status: 'Done' })}
-                      className="text-gray-300 hover:text-blue-500 transition-colors"
+                      className="text-gray-300 hover:text-[#E40046] transition-colors"
                     >
-                      <Circle size={18} />
+                      <Circle size={20} />
                     </button>
                     <div>
-                      <h4 className="font-bold text-gray-900 text-sm leading-tight">{task.title}</h4>
-                      {task.project && <p className="text-[10px] font-bold text-blue-500 uppercase tracking-tight mt-0.5">{task.project.title}</p>}
+                      <h4 className="font-bold text-gray-900 text-sm leading-tight group-hover:text-[#00B5E2] transition-colors">{task.title}</h4>
+                      {task.project && <p className="text-[10px] font-black text-[#00B5E2] uppercase tracking-tighter mt-1">{task.project.title}</p>}
                     </div>
                   </div>
                   <div className="flex items-center gap-4">
-                     <span className={`px-2 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider ${
-                       task.priority === 'Urgent' ? 'bg-red-50 text-red-600' :
-                       task.priority === 'High' ? 'bg-orange-50 text-orange-600' :
-                       'bg-blue-50 text-blue-600'
+                     <span className={`px-3 py-1 rounded-lg text-[9px] font-black uppercase tracking-widest border ${
+                       task.priority === 'Urgent' ? 'bg-red-50 text-red-600 border-red-100' :
+                       task.priority === 'High' ? 'bg-orange-50 text-orange-600 border-orange-100' :
+                       'bg-cyan-50 text-[#00B5E2] border-cyan-100'
                      }`}>
                        {task.priority}
                      </span>
@@ -119,7 +137,7 @@ const Dashboard = () => {
                 </div>
               ))}
               {tasks.filter(t => t.status !== 'Done').length === 0 && (
-                <div className="p-12 text-center text-gray-400 text-sm font-medium">✨ All tasks completed!</div>
+                <div className="p-16 text-center text-gray-300 font-bold uppercase tracking-widest text-xs">✨ Zero Tasks Remaining</div>
               )}
             </div>
           </div>
@@ -128,45 +146,45 @@ const Dashboard = () => {
         {/* Right: Projects */}
         <div className="col-span-1 space-y-6">
           <div className="flex justify-between items-center px-1">
-            <h2 className="text-lg font-bold text-gray-900">Active Projects</h2>
-            <Link to="/app/projects" className="text-xs font-bold text-gray-400 hover:text-gray-600 uppercase tracking-widest">More</Link>
+            <h2 className="text-xl font-black text-gray-900 tracking-tight">Projects</h2>
+            <Link to="/app/projects" className="text-[10px] font-black text-gray-400 hover:text-[#E40046] uppercase tracking-widest transition-colors">See All</Link>
           </div>
 
           <div className="space-y-4">
             {projects.length > 0 ? projects.slice(0, 3).map((proj, idx) => (
-              <div key={proj._id} className="bg-white border border-gray-100 p-5 rounded-2xl shadow-sm hover:border-blue-200 transition-all group">
-                <div className="flex justify-between items-start mb-4">
+              <div key={proj._id} className="bg-white border border-gray-100 p-6 rounded-3xl shadow-sm hover:shadow-xl hover:shadow-cyan-100/20 hover:border-[#00B5E2]/30 transition-all group">
+                <div className="flex justify-between items-start mb-6">
                   <div>
-                    <h3 className="font-bold text-gray-900 group-hover:text-blue-600 transition-colors">{proj.title}</h3>
-                    <p className="text-xs text-gray-500 mt-1 line-clamp-1">{proj.description}</p>
+                    <h3 className="font-black text-gray-900 group-hover:text-[#00B5E2] transition-colors leading-tight">{proj.title}</h3>
+                    <p className="text-xs text-gray-500 mt-2 line-clamp-2 leading-relaxed">{proj.description}</p>
                   </div>
-                  <div className={`w-8 h-8 rounded-lg flex items-center justify-center font-bold text-sm ${
-                    proj.color === 'green' ? 'bg-emerald-100 text-emerald-600' :
-                    proj.color === 'orange' ? 'bg-orange-100 text-orange-600' :
-                    'bg-blue-100 text-blue-600'
+                  <div className={`w-10 h-10 rounded-2xl flex items-center justify-center font-black text-sm shadow-inner shrink-0 ${
+                    proj.color === 'green' ? 'bg-emerald-50 text-emerald-600' :
+                    proj.color === 'orange' ? 'bg-orange-50 text-orange-600' :
+                    'bg-cyan-50 text-[#00B5E2]'
                   }`}>
-                    {proj.title.charAt(0)}
+                    {getInitial(proj.title)}
                   </div>
                 </div>
                 
                 {/* Progress Mini Bar */}
                 <div className="pt-2">
-                   <div className="flex justify-between text-[10px] font-bold text-gray-400 mb-1.5 uppercase tracking-tighter">
-                     <span>Deployment</span>
+                   <div className="flex justify-between text-[10px] font-black text-gray-400 mb-2 uppercase tracking-widest">
+                     <span>Efficiency</span>
                      <span className="text-gray-900">75%</span>
                    </div>
-                   <div className="w-full bg-gray-50 h-1.5 rounded-full overflow-hidden">
-                      <div className={`h-full rounded-full ${
+                   <div className="w-full bg-gray-50 h-2 rounded-full overflow-hidden">
+                      <div className={`h-full rounded-full transition-all duration-1000 ${
                         proj.color === 'green' ? 'bg-emerald-500' :
                         proj.color === 'orange' ? 'bg-orange-500' :
-                        'bg-blue-500'
+                        'bg-[#00B5E2]'
                       }`} style={{ width: `75%` }}></div>
                    </div>
                 </div>
               </div>
             )) : (
-              <div className="bg-gray-50 border-2 border-dashed border-gray-200 rounded-2xl p-8 text-center">
-                <p className="text-gray-400 text-sm font-medium">No projects yet</p>
+              <div className="bg-gray-50 border-2 border-dashed border-gray-100 rounded-3xl p-10 text-center">
+                <p className="text-gray-400 text-xs font-black uppercase tracking-widest">No Projects Found</p>
               </div>
             )}
           </div>

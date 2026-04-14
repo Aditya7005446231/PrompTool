@@ -12,6 +12,12 @@ const Team = () => {
   const [inviteData, setInviteData] = useState({ name: '', email: '', role: 'Member' });
   const [inviteLoading, setInviteLoading] = useState(false);
 
+  const getInitial = (value) => {
+    if (typeof value !== 'string') return '?';
+    const trimmed = value.trim();
+    return trimmed ? trimmed.charAt(0).toUpperCase() : '?';
+  };
+
   useEffect(() => {
     fetchTeams();
   }, []);
@@ -92,16 +98,16 @@ const Team = () => {
   if (!selectedTeam) {
     return (
       <div className="space-y-8">
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 px-2">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900 tracking-tight">Workspaces</h1>
-            <p className="text-gray-500 mt-1">Manage your teams and organizations.</p>
+            <h1 className="text-3xl font-black text-gray-900 tracking-tight">Workspaces</h1>
+            <p className="text-gray-500 font-bold uppercase text-[10px] tracking-widest mt-1">Manage organizations</p>
           </div>
           <button 
             onClick={handleCreateTeam}
-            className="flex items-center gap-2 px-4 py-2 bg-gray-900 text-white rounded-xl text-sm font-medium hover:bg-gray-800 transition-colors shadow-lg"
+            className="flex items-center gap-2 px-6 py-3 bg-[#E40046] text-white rounded-2xl text-sm font-black hover:bg-[#C0003A] transition-all shadow-xl shadow-pink-100 uppercase tracking-widest active:scale-95"
           >
-            <Plus size={18} /> Create New Team
+            <Plus size={18} strokeWidth={3} /> Create Team
           </button>
         </div>
 
@@ -116,18 +122,18 @@ const Team = () => {
             <div 
               key={team._id} 
               onClick={() => setSelectedTeam(team)}
-              className="bg-white rounded-2xl border border-gray-100 p-6 hover:shadow-xl hover:shadow-orange-100 transition-all cursor-pointer group"
+              className="bg-white rounded-3xl border border-gray-100 p-8 hover:shadow-2xl hover:shadow-cyan-100/30 hover:border-[#00B5E2]/30 transition-all cursor-pointer group"
             >
-              <div className="flex items-center justify-between mb-4">
-                <div className="w-12 h-12 bg-orange-100 text-orange-600 rounded-xl flex items-center justify-center font-bold text-xl">
-                  {team.name.charAt(0)}
+              <div className="flex items-center justify-between mb-6">
+                <div className="w-14 h-14 bg-gradient-to-br from-[#00B5E2] to-[#E40046] text-white rounded-2xl flex items-center justify-center font-black text-2xl shadow-lg shadow-cyan-100">
+                  {getInitial(team.name)}
                 </div>
-                <div className="text-sm font-medium text-gray-400 bg-gray-50 px-3 py-1 rounded-full flex items-center gap-2">
-                   <Users size={14}/> {team.members.length}
+                <div className="text-[10px] font-black text-[#00B5E2] bg-cyan-50 px-3 py-1.5 rounded-full flex items-center gap-2 uppercase tracking-widest">
+                   <Users size={14} strokeWidth={3}/> {team.members.length} Members
                 </div>
               </div>
-              <h3 className="text-xl font-bold text-gray-900 mb-1 group-hover:text-orange-600 transition-colors">{team.name}</h3>
-              <p className="text-sm text-gray-500">{team.description}</p>
+              <h3 className="text-2xl font-black text-gray-900 mb-2 group-hover:text-[#00B5E2] transition-colors tracking-tight">{team.name}</h3>
+              <p className="text-sm font-medium text-gray-500 leading-relaxed">{team.description}</p>
             </div>
           ))}
         </div>
@@ -140,41 +146,41 @@ const Team = () => {
   // ==========================================
   return (
     <div className="space-y-8 relative">
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 px-2">
         <div>
           <button 
             onClick={() => setSelectedTeam(null)}
-            className="flex items-center gap-2 text-sm text-gray-500 hover:text-gray-900 mb-2 transition-colors"
+            className="flex items-center gap-2 text-[10px] font-black text-[#00B5E2] hover:text-[#E40046] mb-4 transition-all uppercase tracking-widest"
           >
-            <ArrowLeft size={16} /> Back to Workspaces
+            <ArrowLeft size={16} strokeWidth={3} /> Return to Workspaces
           </button>
-          <h1 className="text-3xl font-bold text-gray-900 tracking-tight">{selectedTeam.name}</h1>
-          <p className="text-gray-500 mt-1">Managed by {selectedTeam.owner.name}</p>
+          <h1 className="text-4xl font-black text-gray-900 tracking-tight">{selectedTeam.name}</h1>
+          <p className="text-gray-500 font-bold uppercase text-[10px] tracking-widest mt-1">Managed lead: {selectedTeam.owner.name}</p>
         </div>
         
         <button 
           onClick={() => setShowInviteModal(true)}
-          className="flex items-center gap-2 px-4 py-2 bg-orange-500 text-white rounded-xl text-sm font-medium hover:bg-orange-600 transition-colors shadow-lg shadow-orange-200"
+          className="flex items-center gap-2 px-6 py-3 bg-[#E40046] text-white rounded-2xl text-sm font-black hover:bg-[#C0003A] transition-all shadow-xl shadow-pink-100 uppercase tracking-widest"
         >
-          <Mail size={18} /> Invite Member
+          <Mail size={18} strokeWidth={3} /> Send Invitation
         </button>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
         {selectedTeam.members.map((memberWrap) => {
-          const user = memberWrap.user; // Remember, we populated this!
+          const user = memberWrap.user;
           return (
-            <div key={user._id} className="bg-white rounded-2xl border border-gray-100 p-6 hover:shadow-xl transition-all group relative">
-              <div className="flex flex-col items-center text-center">
-                <div className="relative mb-4">
-                  {/* Fallback to gray if user.color is technically undefined from old db instances */}
-                  <div className={`w-20 h-20 rounded-full ${user.color || 'bg-gray-100 text-gray-600'} flex items-center justify-center text-2xl font-bold shadow-inner`}>
-                    {user.name.charAt(0)}
+            <div key={user._id} className="bg-white rounded-3xl border border-gray-100 p-8 hover:shadow-2xl hover:border-[#00B5E2]/20 transition-all group relative overflow-hidden">
+              <div className="absolute top-0 right-0 w-24 h-24 bg-cyan-50 rounded-bl-full -mr-12 -mt-12 group-hover:bg-[#00B5E2]/10 transition-colors"></div>
+              <div className="flex flex-col items-center text-center relative z-10">
+                <div className="relative mb-6">
+                  <div className={`w-20 h-20 rounded-2xl bg-gradient-to-tr from-[#00B5E2] to-[#E40046] flex items-center justify-center text-2xl font-black text-white shadow-xl shadow-cyan-100 group-hover:scale-110 transition-transform`}>
+                    {getInitial(user.name)}
                   </div>
                 </div>
-                <h3 className="text-lg font-bold text-gray-900 mb-1">{user.name}</h3>
-                <p className="text-xs font-semibold text-orange-500 bg-orange-50 px-2 py-1 rounded-md mb-2">{memberWrap.role}</p>
-                <p className="text-sm text-gray-500">{user.email}</p>
+                <h3 className="text-xl font-black text-gray-900 mb-1">{user.name}</h3>
+                <p className="text-[10px] font-black text-[#E40046] bg-pink-50 px-3 py-1 rounded-lg mb-4 uppercase tracking-widest">{memberWrap.role}</p>
+                <p className="text-sm font-medium text-gray-500">{user.email}</p>
               </div>
             </div>
           );
@@ -192,25 +198,25 @@ const Team = () => {
             
             <form onSubmit={handleInvite} className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Name</label>
+                <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Member Name</label>
                 <input 
                   required type="text" placeholder="John Doe"
-                  className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-orange-500 outline-none"
+                  className="w-full px-5 py-3 bg-gray-50 border border-gray-100 rounded-xl focus:ring-4 focus:ring-cyan-500/10 focus:border-[#00B5E2] outline-none font-bold text-gray-900 transition-all"
                   value={inviteData.name} onChange={(e) => setInviteData({...inviteData, name: e.target.value})}
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Email Address</label>
                 <input 
                   required type="email" placeholder="john@example.com"
-                  className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-orange-500 outline-none"
+                  className="w-full px-5 py-3 bg-gray-50 border border-gray-100 rounded-xl focus:ring-4 focus:ring-cyan-500/10 focus:border-[#00B5E2] outline-none font-bold text-gray-900 transition-all"
                   value={inviteData.email} onChange={(e) => setInviteData({...inviteData, email: e.target.value})}
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Role</label>
+                <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Workspace Role</label>
                 <select 
-                  className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-xl outline-none"
+                  className="w-full px-5 py-3 bg-gray-50 border border-gray-100 rounded-xl focus:ring-4 focus:ring-cyan-500/10 focus:border-[#00B5E2] outline-none font-bold appearance-none text-gray-900 transition-all"
                   value={inviteData.role} onChange={(e) => setInviteData({...inviteData, role: e.target.value})}
                 >
                   <option value="Member">Member</option>
@@ -220,17 +226,17 @@ const Team = () => {
                 </select>
               </div>
 
-              <div className="flex gap-3 pt-4">
+              <div className="flex gap-4 pt-6">
                 <button 
                   type="button" 
                   onClick={() => setShowInviteModal(false)}
-                  className="flex-1 px-4 py-2 text-gray-600 font-medium hover:bg-gray-100 rounded-xl transition-colors"
+                  className="flex-1 px-4 py-4 text-gray-400 font-black hover:bg-gray-100 rounded-2xl transition-all uppercase tracking-widest text-xs"
                 >
                   Cancel
                 </button>
                 <button 
                   type="submit" disabled={inviteLoading}
-                  className="flex-1 px-4 py-2 bg-orange-500 text-white font-medium rounded-xl hover:bg-orange-600 transition-colors disabled:opacity-50"
+                  className="flex-1 px-4 py-4 bg-[#00B5E2] text-white font-black rounded-2xl hover:bg-[#008CAB] transition-all disabled:opacity-50 uppercase tracking-widest text-xs shadow-lg shadow-cyan-100"
                 >
                   {inviteLoading ? 'Sending...' : 'Send Invite'}
                 </button>

@@ -1,6 +1,6 @@
 "use client";
 import React, { useEffect, useRef, useState } from "react";
-import { motion, useScroll, useTransform } from "framer-motion";
+import { motion, useReducedMotion, useScroll, useTransform } from "framer-motion";
 import { cn } from "@/lib/utils";
 import {
   IconBrightnessDown,
@@ -38,19 +38,46 @@ export const MacbookScroll = ({
   });
 
   const [isMobile, setIsMobile] = useState(false);
+  const prefersReducedMotion = useReducedMotion();
 
   useEffect(() => {
-    if (window && window.innerWidth < 768) {
-      setIsMobile(true);
-    }
+    if (typeof window === "undefined") return;
+
+    const updateViewportState = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+
+    updateViewportState();
+    window.addEventListener("resize", updateViewportState);
+
+    return () => window.removeEventListener("resize", updateViewportState);
   }, []);
 
-  const scaleX = useTransform(scrollYProgress, [0, 0.3], [1.05, isMobile ? 1 : 1.2]);
-  const scaleY = useTransform(scrollYProgress, [0, 0.3], [0.9, isMobile ? 1 : 1.2]);
-  const translate = useTransform(scrollYProgress, [0, 1], [0, 0]);
-  const rotate = useTransform(scrollYProgress, [0.1, 0.12, 0.3], [-28, -28, 0]);
-  const textTransform = useTransform(scrollYProgress, [0, 0.3], [0, 100]);
+  const reduceMotion = prefersReducedMotion || isMobile;
+
+  const scaleX = useTransform(
+    scrollYProgress,
+    [0, 0.3],
+    [reduceMotion ? 1 : 1.16, 1]
+  );
+  const scaleY = useTransform(
+    scrollYProgress,
+    [0, 0.3],
+    [reduceMotion ? 1 : 0.84, 1]
+  );
+  const translate = useTransform(
+    scrollYProgress,
+    [0, 0.4],
+    [reduceMotion ? 0 : 44, 0]
+  );
+  const rotate = useTransform(
+    scrollYProgress,
+    [0, 0.12, 0.3],
+    [reduceMotion ? 0 : -34, reduceMotion ? 0 : -30, 0]
+  );
+  const textTransform = useTransform(scrollYProgress, [0, 0.22], [0, reduceMotion ? 0 : 72]);
   const textOpacity = useTransform(scrollYProgress, [0, 0.2], [1, 0]);
+  const baseTranslate = useTransform(scrollYProgress, [0, 0.3], [reduceMotion ? 0 : 14, 0]);
 
   return (
     <div
@@ -78,7 +105,8 @@ export const MacbookScroll = ({
           rotate={rotate}
           translate={translate} />
         {/* Base area */}
-        <div
+        <motion.div
+          style={{ translateY: baseTranslate }}
           className="relative -z-10 h-[22rem] w-[32rem] overflow-hidden rounded-2xl bg-gray-200 dark:bg-[#272729]">
           {/* above keyboard bar */}
           <div className="relative h-10 w-full">
@@ -103,7 +131,7 @@ export const MacbookScroll = ({
               className="absolute inset-x-0 bottom-0 z-50 h-40 w-full bg-gradient-to-t from-white via-white to-transparent dark:from-black dark:via-black"></div>
           )}
           {badge && <div className="absolute bottom-4 left-4">{badge}</div>}
-        </div>
+        </motion.div>
       </div>
     </div>
   );
